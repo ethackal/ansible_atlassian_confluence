@@ -2,7 +2,9 @@
 # tasks file for atlassian-confluence
 
 - name: install requirements
-  apt: name={{ item }} state=present
+  package: 
+    name: "{{ item }}"
+    state: present
   with_items:
     - python-lxml
   tags:
@@ -22,7 +24,16 @@
     - atlassian-confluence
 
 - name: create user
-  user: name="{{ atlassian_confluence_user }}" uid={{ atlassian_confluence_uid }} system=no createhome=no comment="Atlassian Confluence" group={{ atlassian_confluence_group }} home=/nonexistant shell=/bin/false state=present
+  user:
+    name: "{{ atlassian_confluence_user }}"
+    uid: "{{ atlassian_confluence_uid }}"
+    system: no
+    createhome: no 
+    comment: "Atlassian Confluence"
+    group: "{{ atlassian_confluence_group }}"
+    home: /nonexistant
+    shell: /bin/false
+    state: present
   tags:
     - atlassian-confluence
 
@@ -123,12 +134,13 @@
   tags:
     - atlassian-confluence
 
-- name: create template startup sctipts
+- name: create template startup scripts 
   template:
     src: "{{ item }}"
     dest: "{{ atlassian_confluence_dir }}/{{ item }}"
   with_items:
     - startup-init.d
     - startup-supervisord
+    - confluence.service
   tags:
     - atlassian-confluence
